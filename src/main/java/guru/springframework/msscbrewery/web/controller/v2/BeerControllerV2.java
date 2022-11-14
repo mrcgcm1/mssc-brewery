@@ -1,10 +1,12 @@
-package guru.springframework.msscbrewery.web.controller;
+package guru.springframework.msscbrewery.web.controller.v2;
 
 import guru.springframework.msscbrewery.services.BeerService;
 import guru.springframework.msscbrewery.web.model.BeerDto;
+import guru.springframework.msscbrewery.web.model.v2.BeerDtoV2;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.ConstraintViolationException;
@@ -16,13 +18,15 @@ import java.util.UUID;
 /**
  * Created by jt on 2019-04-20.
  */
-@RequestMapping("/api/v1/beer")
+@Validated
+@RequestMapping(BeerControllerV2.PATH)
 @RestController
-public class BeerController {
+public class BeerControllerV2 {
 
+    public static final String PATH = "/api/v2/beer";
     private final BeerService beerService;
 
-    public BeerController(BeerService beerService) {
+    public BeerControllerV2(BeerService beerService) {
         this.beerService = beerService;
     }
 
@@ -36,7 +40,7 @@ public class BeerController {
         BeerDto savedDto = beerService.saveNewBeer(beerDto);
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Location", "/api/v1/beer" + savedDto.getId().toString());
+        headers.add("Location", PATH + savedDto.getId().toString());
         return new ResponseEntity(headers, HttpStatus.CREATED);
 
     }
@@ -56,7 +60,7 @@ public class BeerController {
 
     }
 @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<List> validationeErrorHandler(ConstraintViolationException ex){
+    public ResponseEntity<List> getValidationeErrorHandler(ConstraintViolationException ex){
         List<String> errors = new ArrayList<>(ex.getConstraintViolations().size());
 
     ex.getConstraintViolations().forEach(c ->{
